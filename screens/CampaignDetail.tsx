@@ -6,13 +6,14 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  Platform
 } from 'react-native';
 import { API_URL } from '../constants/constants'; // Replace with your actual API URL
 import HTML from 'react-native-render-html';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const CampaignDetail = ({ route, navigation }) => {
   const [promotionDetail, setPromotionsDetail] = useState([]);
@@ -49,12 +50,7 @@ const CampaignDetail = ({ route, navigation }) => {
           <TouchableOpacity onPress={() => handleBack()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
-
         </View>
-          <Image
-            source={{ uri: promotionDetail?.BrandIconUrl }}
-            style={styles.brandIcon}
-          />
         <View style={styles.content}>
           <HTML source={{ html: promotionDetail?.Title }} contentWidth={width} />
           <HTML source={{ html: promotionDetail?.Description }} contentWidth={width} />
@@ -63,6 +59,10 @@ const CampaignDetail = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <Image
+        source={{ uri: promotionDetail?.BrandIconUrl }}
+        style={styles.brandIcon}
+      />
     </View>
   );
 }
@@ -77,19 +77,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    paddingTop: Platform.OS === 'android' ? 25 : 0, // For Android status bar
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    paddingTop: 48, // iPhone X için durum çubuğu boşluğu
-    zIndex: 10, 
+    height: 56, // Standard navbar height
+    paddingHorizontal: 16,
+    zIndex: 10
   },
   brandIcon: {
+    position: 'absolute',
+    bottom: height * 0.60, // Adjust the bottom position as necessary
+    // left: 5,
     width: 50,
     height: 50,
     resizeMode: 'contain',
+    zIndex: 10,
   },
   backButton: {
     marginLeft: 10,
+
   },
   headerTitle: {
     fontWeight: 'bold',
@@ -101,9 +107,14 @@ const styles = StyleSheet.create({
     height: 300, // veya aspect ratio'nunuza göre ayarlayın
     position: 'absolute',
     top: 0,
+    resizeMode: 'cover',
   },
   content: {
-    padding: 20, // İçerik kısmının dış boşlukları
+    flex: 1,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    marginTop: height * 0.45,// İçerik kısmının dış boşlukları
   },
   title: {
     fontSize: 24,
