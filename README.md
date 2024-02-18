@@ -32,5 +32,5 @@ npm run android
 ```
 ### Proje Görselleri
 ![image](https://github.com/ArdoganNihal/daha-daha/assets/71765499/a0220104-8812-4d78-a143-74d097ce685e)
-![image](https://github.com/ArdoganNihal/daha-daha/assets/71765499/bbd4bca7-1fe3-4772-b263-cfb0b46a4db5)
+![image](https://github.com/ArdoganNihal/daha-daha/assets/71765499/fe8b518c-513b-4e71-9cf5-58dd8cd0834e)
 
