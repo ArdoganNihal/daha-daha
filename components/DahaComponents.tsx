@@ -6,7 +6,7 @@ const DahaComponent = () => {
         <View style={styles.logoContainer}>
             {/* DAHA yazısı için her harfin bloğu */}
             {['D', 'A', 'H', 'A'].map((letter, index) => (
-                <View key={letter} style={styles.letterBlock}>
+                <View key={letter + index} style={styles.letterBlock}>
                     {/* Üst blok */}
                     <View style={[styles.block, styles[`color${index}Top`]]}>
                         <Text style={styles.text}>{letter}</Text>

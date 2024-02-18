@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -18,9 +18,12 @@ import DahaComponent from '../components/DahaComponents';
 // Replace with your actual API URL
 
 const HomeScreen = ({navigation}) => {
+    // Refs
+    const flatListRef = useRef(null);
+    // States
     const [promotions, setPromotions] = useState([]);
     const [tags, setTags] = useState([]);
-    const [selectedTags, setSelectedTags] = useState([]);
+    const [selectedTags, setSelectedTags] = useState(null);
     const [activeSlide, setActiveSlide] = useState(0);
 
     const fetchPromotions = async () => {
@@ -30,9 +33,29 @@ const HomeScreen = ({navigation}) => {
                 'X-Language-Id': 'TR', // notice the Bearer before your token
             },
         });
+
         const data = await response.json();
-        console.log(data)
+
         setPromotions(data);
+    };
+
+    const fetchPromotionsWithTag = async (tagId) =>{
+        const response = await fetch(`${API_URL}/promotions/list?Channel=PWA&tagId=${tagId}`, {
+            headers: {
+                'X-Country-Id': 'TR',
+                'X-Language-Id': 'TR', // notice the Bearer before your token
+            },
+        });
+
+        const data = await response.json();
+
+        return data;
+    }
+
+    const onViewableItemsChanged = ({ viewableItems }) => {
+        const nextSelectedDotIndex = viewableItems[1]?.index ?? viewableItems[0]?.index ?? 0;
+
+        setActiveSlide(nextSelectedDotIndex);
     };
 
     const fetchTags = async () => {
@@ -43,29 +66,29 @@ const HomeScreen = ({navigation}) => {
             },
         });
         const data = await response.json();
-        console.log(data)
+
         setTags(data);
     }
 
-    const handleTagPress = (tagId) => {
-        console.log(tagId)
-        const newSelectedTags = selectedTags.includes(tagId)
-          ? selectedTags.filter((id) => id !== tagId)
-          : [...selectedTags, tagId];
-        setSelectedTags(newSelectedTags);
-
+    const handleTagPress = async (tagId) => {
+        const nextSelectedTagsValue = selectedTags == tagId ? null : tagId;
+        
+        setSelectedTags(nextSelectedTagsValue);
         // Filtrelenmiş promosyonları ayarla
-        if (newSelectedTags.length === 0) {
+        if (!tagId) {
             // Eğer hiç etiket seçilmemişse tüm promosyonları göster
             fetchPromotions();
         } else {
+
+            const promotionsFilteredWithTag = await fetchPromotionsWithTag(tagId);
             // Seçili etiketlere göre promosyonları filtrele
-            setPromotions(previousPromotions =>
-                previousPromotions.filter(promotion =>
-                    promotion.PromotionTags?.some(tag => newSelectedTags.includes(tag.Id))
-                )
-            );
+            setPromotions(promotionsFilteredWithTag ?? []);
         }
+
+        setActiveSlide(0);
+        // @ts-ignore
+        flatListRef?.current?.scrollToIndex({ animated: true, index: 0 });
+
     };
 
 
@@ -88,7 +111,7 @@ const HomeScreen = ({navigation}) => {
         // {index > 0 && <View style={styles.divider} />} 
             <TouchableOpacity style={[
                 styles.tagButton,
-                { backgroundColor: selectedTags.includes(item.Id) ? '#ddd' : '#fff' }
+                { backgroundColor: selectedTags == item.Id ? '#ddd' : '#fff' }
             ]} onPress={() => handleTagPress(item.Id)}>
                 <Image
                     source={{ uri: item?.IconUrl }}
@@ -118,16 +141,19 @@ const HomeScreen = ({navigation}) => {
             </View>
             <FlatList
                 horizontal
+                ref={flatListRef}
                 data={promotions}
                 renderItem={renderPromotions}
                 keyExtractor={(item) => item.Id}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.promotionListContainer}
+                onViewableItemsChanged={onViewableItemsChanged}
+                
             />
             <View>
                 <Pagination
                     activeDotIndex={activeSlide}
-                    dotsLength={promotions.length}
+                    dotsLength={promotions?.length ?? 0}
                     containerStyle={styles.paginationContainer}
                     inactiveDotOpacity={0.4}
                     inactiveDotScale={0.6} />

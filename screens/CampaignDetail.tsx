@@ -112,8 +112,9 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     backgroundColor: '#fff',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginHorizontal:10,
     marginTop: height * 0.45,// İçerik kısmının dış boşlukları
   },
   title: {
