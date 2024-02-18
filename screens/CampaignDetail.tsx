@@ -30,7 +30,7 @@ const CampaignDetail = ({ route, navigation }) => {
     setPromotionsDetail(data);
   };
 
-  const handleBack = () =>{
+  const handleBack = () => {
     navigation.goBack()
 
   }
@@ -39,33 +39,31 @@ const CampaignDetail = ({ route, navigation }) => {
     // return () => setPromotionsDetail(null);
   }, [Id]);
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      <Image
+        source={{ uri: promotionDetail?.ImageUrl }}
+        style={styles.image}
+      />
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => handleBack()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </TouchableOpacity>
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => handleBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
-
-      </View>
-      <View>
-
-        <Image
-          source={{ uri: promotionDetail?.ImageUrl }}
-          style={styles.image}
-        />
-        <Image
-          source={{ uri: promotionDetail?.BrandIconUrl }}
-          style={styles.brandIcon}
-        />
-      </View>
-      <View style={styles.content}>
-        <HTML source={{ html: promotionDetail?.Title }} contentWidth={width} />
-        <HTML source={{ html: promotionDetail?.Description }} contentWidth={width} />
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>{promotionDetail?.DetailButtonText}</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        </View>
+          <Image
+            source={{ uri: promotionDetail?.BrandIconUrl }}
+            style={styles.brandIcon}
+          />
+        <View style={styles.content}>
+          <HTML source={{ html: promotionDetail?.Title }} contentWidth={width} />
+          <HTML source={{ html: promotionDetail?.Description }} contentWidth={width} />
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>{promotionDetail?.DetailButtonText}</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -75,12 +73,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  scrollContainer: {
+    flex: 1,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
     paddingTop: 48, // iPhone X için durum çubuğu boşluğu
-    backgroundColor: '#fafafa', // Header arkaplan rengi
+    zIndex: 10, 
   },
   brandIcon: {
     width: 50,
@@ -96,9 +97,10 @@ const styles = StyleSheet.create({
     // Header başlığı stilini burada ayarlayabilirsiniz
   },
   image: {
-    height: 300, // Resim yüksekliği
     width: '100%',
-    resizeMode: 'cover',
+    height: 300, // veya aspect ratio'nunuza göre ayarlayın
+    position: 'absolute',
+    top: 0,
   },
   content: {
     padding: 20, // İçerik kısmının dış boşlukları
